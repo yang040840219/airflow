@@ -51,6 +51,7 @@
                 <th>DAG</th>
                 <th>Schedule</th>
                 <th>Owner</th>
+                <th>Description</th>
                 <th style="padding-left: 5px;">Recent Tasks
                   <span id="statuses_info" class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Status of tasks from all active DAG runs or, if not currently active, from most recent run."></span>
                   <img id="loading" width="15" src="{{ url_for("static", filename="loading.gif") }}">
@@ -97,6 +98,11 @@
                 <!-- Column 5: Dag Owners -->
                 <td>
                   {{ dag.owners }}
+                </td>
+
+                <!-- Column 6: Dag Description -->
+                <td>
+                    {{ dag.description }}
                 </td>
 
                 <!-- Column 6: Recent Tasks -->

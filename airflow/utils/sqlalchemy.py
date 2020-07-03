@@ -34,8 +34,9 @@ from sqlalchemy.types import Text, DateTime, TypeDecorator
 
 from airflow.configuration import conf
 
-log = logging.getLogger(__name__)
-utc = pendulum.timezone('UTC')
+log = LoggingMixin().log
+utc = pendulum.timezone('Asia/Shanghai')
+
 
 using_mysql = conf.get('core', 'sql_alchemy_conn').lower().startswith('mysql')
 

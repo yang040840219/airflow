@@ -36,7 +36,11 @@ from operator import itemgetter
 from textwrap import dedent
 
 import sqlalchemy as sqla
+<<<<<<< Updated upstream
 import pendulum
+=======
+from sqlalchemy import or_
+>>>>>>> Stashed changes
 from flask import (
     abort, jsonify, redirect, url_for, request, Markup, Response,
     current_app, render_template, make_response)
@@ -2295,7 +2299,8 @@ class HomeView(AirflowViewMixin, AdminIndexView):
         if arg_search_query:
             query = query.filter(
                 DM.dag_id.ilike('%' + arg_search_query + '%') |
-                DM.owners.ilike('%' + arg_search_query + '%')
+                DM.owners.ilike('%' + arg_search_query + '%') |
+                DM.description.ilike('%' + arg_search_query + '%')
             )
 
         query = query.order_by(DM.dag_id)
