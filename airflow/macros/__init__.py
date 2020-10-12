@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,13 +15,15 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
+"""Macros."""
+import time  # noqa
+import uuid  # noqa
 from datetime import datetime, timedelta
-import dateutil # noqa
-from random import random # noqa
-import time # noqa
-from . import hive # noqa
-import uuid # noqa
+from random import random  # noqa
+
+import dateutil  # noqa
+
+from airflow.macros import hive  # noqa
 
 
 def ds_add(ds, days):
@@ -39,7 +40,6 @@ def ds_add(ds, days):
     >>> ds_add('2015-01-06', -5)
     '2015-01-01'
     """
-
     ds = datetime.strptime(ds, '%Y-%m-%d')
     if days:
         ds = ds + timedelta(days)
@@ -72,21 +72,12 @@ def datetime_diff_for_humans(dt, since=None):
     one and now.
 
     :param dt: The datetime to display the diff for
-    :type dt: datetime
+    :type dt: datetime.datetime
     :param since: When to display the date from. If ``None`` then the diff is
         between ``dt`` and now.
-    :type since: None or datetime
+    :type since: None or datetime.datetime
     :rtype: str
     """
     import pendulum
 
     return pendulum.instance(dt).diff_for_humans(since)
-
-
-def _integrate_plugins():
-    """Integrate plugins to the context"""
-    import sys
-    from airflow.plugins_manager import macros_modules
-    for macros_module in macros_modules:
-        sys.modules[macros_module.__name__] = macros_module
-        globals()[macros_module._name] = macros_module

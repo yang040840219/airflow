@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -17,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from airflow.settings import STATE_COLORS
+
 
 class State:
     """
@@ -25,7 +26,7 @@ class State:
     """
 
     # scheduler
-    NONE = None
+    NONE = None  # type: None
     REMOVED = "removed"
     SCHEDULED = "scheduled"
 
@@ -42,6 +43,7 @@ class State:
     UP_FOR_RESCHEDULE = "up_for_reschedule"
     UPSTREAM_FAILED = "upstream_failed"
     SKIPPED = "skipped"
+    SENSING = "sensing"
 
     task_states = (
         SUCCESS,
@@ -54,6 +56,7 @@ class State:
         QUEUED,
         NONE,
         SCHEDULED,
+        SENSING,
     )
 
     dag_states = (
@@ -75,18 +78,36 @@ class State:
         REMOVED: 'lightgrey',
         SCHEDULED: 'tan',
         NONE: 'lightblue',
+        SENSING: 'lightseagreen',
     }
+    state_color.update(STATE_COLORS)  # type: ignore
 
     @classmethod
     def color(cls, state):
+        """
+        Returns color for a state.
+        """
         return cls.state_color.get(state, 'white')
 
     @classmethod
     def color_fg(cls, state):
+        """
+        Black&white colors for a state.
+        """
         color = cls.color(state)
         if color in ['green', 'red']:
             return 'white'
         return 'black'
+
+    @classmethod
+    def running(cls):
+        """
+        A list of states indicating that a task is being executed.
+        """
+        return [
+            cls.RUNNING,
+            cls.SENSING
+        ]
 
     @classmethod
     def finished(cls):
@@ -112,7 +133,18 @@ class State:
             cls.SCHEDULED,
             cls.QUEUED,
             cls.RUNNING,
+            cls.SENSING,
             cls.SHUTDOWN,
             cls.UP_FOR_RETRY,
-            cls.UP_FOR_RESCHEDULE
+            cls.UP_FOR_RESCHEDULE,
         ]
+
+
+class PokeState:
+    """
+    Static class with poke states constants used in smart operator.
+    """
+
+    LANDED = 'landed'
+    NOT_LANDED = 'not_landed'
+    POKE_EXCEPTION = 'poke_exception'

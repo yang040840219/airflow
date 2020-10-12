@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -25,13 +24,15 @@ class DummyOperator(BaseOperator):
     """
     Operator that does literally nothing. It can be used to group tasks in a
     DAG.
+
+    The task is evaluated by the scheduler but never processed by the executor.
     """
 
     ui_color = '#e8f7e4'
 
     @apply_defaults
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
     def execute(self, context):
         pass

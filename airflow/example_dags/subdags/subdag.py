@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -19,8 +18,10 @@
 
 """Helper function to generate a DAG and operators given some arguments."""
 
-from airflow.models import DAG
+# [START subdag]
+from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.utils.dates import days_ago
 
 
 def subdag(parent_dag_name, child_dag_name, args):
@@ -36,6 +37,7 @@ def subdag(parent_dag_name, child_dag_name, args):
     dag_subdag = DAG(
         dag_id='%s.%s' % (parent_dag_name, child_dag_name),
         default_args=args,
+        start_date=days_ago(2),
         schedule_interval="@daily",
     )
 
@@ -47,3 +49,4 @@ def subdag(parent_dag_name, child_dag_name, args):
         )
 
     return dag_subdag
+# [END subdag]

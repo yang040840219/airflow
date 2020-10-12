@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,14 +17,14 @@
 # under the License.
 
 import unittest
-from airflow.utils.state import State
 from unittest.mock import Mock, patch
 
 from airflow.models import DAG, DagRun
 from airflow.ti_deps.deps.dagrun_exists_dep import DagrunRunningDep
+from airflow.utils.state import State
 
 
-class DagrunRunningDepTest(unittest.TestCase):
+class TestDagrunRunningDep(unittest.TestCase):
 
     @patch('airflow.models.DagRun.find', return_value=())
     def test_dagrun_doesnt_exist(self, mock_dagrun_find):

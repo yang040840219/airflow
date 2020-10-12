@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,16 +15,26 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import logging
+from typing import Optional
 
-from airflow import configuration
+from cryptography.fernet import Fernet, MultiFernet
+
+from airflow.configuration import conf
 from airflow.exceptions import AirflowException
-from airflow.utils.log.logging_mixin import LoggingMixin
+from airflow.typing_compat import Protocol
+
+log = logging.getLogger(__name__)
 
 
-class InvalidFernetToken(Exception):
-    # If Fernet isn't loaded we need a valid exception class to catch. If it is
-    # loaded this will get reset to the actual class once get_fernet() is called
-    pass
+class FernetProtocol(Protocol):
+    """This class is only used for TypeChecking (for IDEs, mypy, pylint, etc)"""
+
+    def decrypt(self, b):
+        """Decrypt with Fernet"""
+
+    def encrypt(self, b):
+        """Encrypt with Fernet"""
 
 
 class NullFernet:
@@ -37,16 +46,19 @@ class NullFernet:
     difference, and to only display the message once, not 20 times when
     `airflow db init` is ran.
     """
+
     is_encrypted = False
 
     def decrypt(self, b):
+        """Decrypt with Fernet."""
         return b
 
     def encrypt(self, b):
+        """Encrypt with Fernet."""
         return b
 
 
-_fernet = None
+_fernet = None  # type: Optional[FernetProtocol]
 
 
 def get_fernet():
@@ -59,25 +71,13 @@ def get_fernet():
     :return: Fernet object
     :raises: airflow.exceptions.AirflowException if there's a problem trying to load Fernet
     """
-    global _fernet
-    log = LoggingMixin().log
+    global _fernet  # pylint: disable=global-statement
 
     if _fernet:
         return _fernet
-    try:
-        from cryptography.fernet import Fernet, MultiFernet, InvalidToken
-        global InvalidFernetToken
-        InvalidFernetToken = InvalidToken
-
-    except ImportError:
-        log.warning(
-            "cryptography not found - values will not be stored encrypted."
-        )
-        _fernet = NullFernet()
-        return _fernet
 
     try:
-        fernet_key = configuration.conf.get('core', 'FERNET_KEY')
+        fernet_key = conf.get('core', 'FERNET_KEY')
         if not fernet_key:
             log.warning(
                 "empty cryptography key - values will not be stored encrypted."
@@ -89,7 +89,7 @@ def get_fernet():
                 for fernet_part in fernet_key.split(',')
             ])
             _fernet.is_encrypted = True
-    except (ValueError, TypeError) as ve:
-        raise AirflowException("Could not create Fernet object: {}".format(ve))
+    except (ValueError, TypeError) as value_error:
+        raise AirflowException("Could not create Fernet object: {}".format(value_error))
 
     return _fernet

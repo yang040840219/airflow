@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -20,8 +19,6 @@
 
 from urllib.parse import urljoin
 
-import requests
-
 from airflow.api.client import api_client
 
 
@@ -31,18 +28,15 @@ class Client(api_client.Client):
     def _request(self, url, method='GET', json=None):
         params = {
             'url': url,
-            'auth': self._auth,
         }
         if json is not None:
             params['json'] = json
-
-        resp = getattr(requests, method.lower())(**params)  # pylint: disable=not-callable
+        resp = getattr(self._session, method.lower())(**params)  # pylint: disable=not-callable
         if not resp.ok:
             # It is justified here because there might be many resp types.
-            # noinspection PyBroadException
             try:
                 data = resp.json()
-            except Exception:  # pylint: disable=broad-except
+            except Exception:  # noqa pylint: disable=broad-except
                 data = {}
             raise OSError(data.get('error', 'Server error'))
 
@@ -93,3 +87,9 @@ class Client(api_client.Client):
         url = urljoin(self._api_base_url, endpoint)
         pool = self._request(url, method='DELETE')
         return pool['pool'], pool['slots'], pool['description']
+
+    def get_lineage(self, dag_id: str, execution_date: str):
+        endpoint = f"/api/experimental/lineage/{dag_id}/{execution_date}"
+        url = urljoin(self._api_base_url, endpoint)
+        data = self._request(url, method='GET')
+        return data['message']

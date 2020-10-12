@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -64,14 +63,6 @@ class BaseDag(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def is_paused(self):
-        """
-        :return: whether this DAG is paused or not
-        :rtype: bool
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
     def pickle_id(self):
         """
         :return: The pickle ID for this DAG, if it has one. Otherwise None.
@@ -84,6 +75,7 @@ class BaseDagBag:
     """
     Base object that both the SimpleDagBag and DagBag inherit.
     """
+
     @property
     @abstractmethod
     def dag_ids(self):

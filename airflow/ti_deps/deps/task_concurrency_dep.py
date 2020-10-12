@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,13 +17,14 @@
 # under the License.
 
 from airflow.ti_deps.deps.base_ti_dep import BaseTIDep
-from airflow.utils.db import provide_session
+from airflow.utils.session import provide_session
 
 
 class TaskConcurrencyDep(BaseTIDep):
     """
     This restricts the number of running task instances for a particular task.
     """
+
     NAME = "Task Concurrency"
     IGNOREABLE = True
     IS_TASK_DEP = True
